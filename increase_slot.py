@@ -2,11 +2,12 @@
 # append_go_sequence.py
 import argparse
 import re
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
-NUMERIC_LINE_TMPL = r'^([ \t]*){name}\(\s*(\d+)\s*\)\s*(\\)?[ \t]*(?://.*)?\r?\n?$'
+NUMERIC_LINE_TMPL = r"^([ \t]*){name}\(\s*(\d+)\s*\)\s*(\\)?[ \t]*(?://.*)?\r?\n?$"
+
 
 def append_numeric_blocks(file: Path, target: int, name: str, dry: bool) -> None:
     if target <= 0:
@@ -75,19 +76,23 @@ def append_numeric_blocks(file: Path, target: int, name: str, dry: bool) -> None
 
     bak = file.with_suffix(file.suffix + ".bak")
     shutil.copy2(file, bak)
-    file.write_text(''.join(lines), encoding="utf-8")
+    file.write_text("".join(lines), encoding="utf-8")
     print(f"[SAVE] 書き換え完了: {file}（バックアップ: {bak.name}）")
+
 
 def main():
     ap = argparse.ArgumentParser(
         description="数値 GO(n) 連続ブロックの末尾だけを GO(target-1) まで拡張。末尾に \\ が無ければ付与してから追記します。"
     )
     ap.add_argument("file", type=Path, help="書き換える C/ヘッダファイル")
-    ap.add_argument("--target", type=int, required=True, help="末尾を GO(target-1) まで拡張")
+    ap.add_argument(
+        "--target", type=int, required=True, help="末尾を GO(target-1) まで拡張"
+    )
     ap.add_argument("--name", type=str, default="GO", help="対象マクロ名（既定: GO）")
     ap.add_argument("--dry-run", action="store_true", help="保存せず変更の有無だけ表示")
     args = ap.parse_args()
     append_numeric_blocks(args.file, args.target, args.name, args.dry_run)
+
 
 if __name__ == "__main__":
     main()
