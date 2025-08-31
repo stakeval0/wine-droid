@@ -9,7 +9,7 @@ function setup_wine() (
     mv wine-$1-x86 wine$1
     cd /opt/wine$1/bin/
     mv wineserver wineserver.real
-    curl -sL https://raw.githubusercontent.com/stakeval0/wine-droid/refs/heads/main/wineserver.c | gcc -x c - -o wineserver
+    curl -fsSL https://raw.githubusercontent.com/stakeval0/wine-droid/refs/heads/main/wineserver.c | gcc -x c - -o wineserver
 )
 
 setup_wine 9.0

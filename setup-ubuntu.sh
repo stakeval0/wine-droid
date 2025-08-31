@@ -1,21 +1,23 @@
 #!/bin/bash
 apt-get update && apt-get upgrade -y
 ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+export TZ=Asia/Tokyo
 apt-get install -y\
     apt-utils curl wget\
-    x11-apps locales fonts-migmix
+    x11-apps locales fonts-migmix tzdata
 
 bash -c "apt-get install -y \
     gstreamer1.0-{plugins-{bad,base,good,ugly},libav,pulseaudio}:armhf \
+    mesa*:armhf libgl1-mesa*:armhf libvulkan1:armhf \
     pulseaudio ffmpeg \
     fonts-{takao,mona,monapo} \
     xvfb winbind \
     "
 
-
 # install box64: https://github.com/ptitSeb/box64
 git clone https://github.com/ptitSeb/box64
 cd box64
+curl -fsSL https://raw.githubusercontent.com/stakeval0/wine-droid/refs/heads/main/increase_slot.py | python3 - src/wrapped/wrappedlibx11.c --target 64
 cmake -S . -B build/ -D ARM_DYNAREC=ON -D CMAKE_BUILD_TYPE=RelWithDebInfo
 cmake --build build/ -j 6
 cd build && make install
@@ -27,6 +29,7 @@ dpkg --add-architecture armhf && apt-get update
 apt-get install -y gcc-arm-linux-gnueabihf
 git clone https://github.com/ptitSeb/box86
 cd box86
+curl -fsSL https://raw.githubusercontent.com/stakeval0/wine-droid/refs/heads/main/increase_slot.py | python3 - src/wrapped/wrappedlibx11.c --target 64
 cmake -S . -B build/ -D CMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -D ARM_DYNAREC=ON -D CMAKE_BUILD_TYPE=RelWithDebInfo
 cmake --build build/ -j 6
 cd build && make install
