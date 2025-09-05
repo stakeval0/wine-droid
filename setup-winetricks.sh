@@ -8,6 +8,10 @@ while [[ $# -gt 0 ]]; do
             USE_DXVK=false
             shift
             ;;
+        --arch64)
+            export WINEARCH=win64
+            shift
+            ;;
         *)
             shift
             ;;

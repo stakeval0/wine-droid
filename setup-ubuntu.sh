@@ -14,14 +14,17 @@ bash -c "apt-get install -y \
     xvfb winbind \
     "
 
+script_dir=$(dirname $0)
+
 # install box64: https://github.com/ptitSeb/box64
+cd $script_dir
 git clone https://github.com/ptitSeb/box64
 cd box64
 curl -fsSL https://raw.githubusercontent.com/stakeval0/wine-droid/refs/heads/main/increase_slot.py | python3 - src/wrapped/wrappedlibx11.c --target 64
 cmake -S . -B build/ -D ARM_DYNAREC=ON -D CMAKE_BUILD_TYPE=RelWithDebInfo
 cmake --build build/ -j 6
 cd build && make install
-cd /root
+cd $script_dir
 # rm -rf box64 # 不具合でスクリプトが途中で止まったりするので削除は手動
 
 # install box86
@@ -33,7 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/stakeval0/wine-droid/refs/heads/mai
 cmake -S . -B build/ -D CMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -D ARM_DYNAREC=ON -D CMAKE_BUILD_TYPE=RelWithDebInfo
 cmake --build build/ -j 6
 cd build && make install
-cd /root
+cd $script_dir
 # rm -rf box86 # 不具合でスクリプトが途中で止まったりするので削除は手動
 
 
