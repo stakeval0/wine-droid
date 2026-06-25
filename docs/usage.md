@@ -69,6 +69,8 @@ cd /wine-droid
 ./setup-winetricks.sh
 ```
 
+`setup-winetricks.sh` は GUI 承認なしで完走する前提です。winetricks は `-q` と `xvfb-run` 経由で実行し、ダイアログ操作に依存しないようにしています。
+
 既定は 64-bit/WOW64 prefix です。64-bit prefix の方がメモリ管理に余裕があり、32-bit prefix では BGI 系などでアドレス空間不足由来の落ち方をしやすいためです。
 
 ほとんどのゲームでは既定のまま使います。32-bit prefix は必要な場合だけ明示的に使います。
@@ -139,7 +141,7 @@ WINE_DROID_WINE_VERSION=10.0 ./setup-wine.sh
 
 `/opt/wine` は最後に導入した Wine への symlink になります。
 
-既存 prefix を別 Wine version で開くと Mono/Gecko prompt が出ることがあります。prefix を更新する場合は `setup-winetricks.sh` を通すと、`xvfb-run` と `WINEDLLOVERRIDES=mscoree,mshtml=` で非対話に寄せます。
+既存 prefix を別 Wine version で開くと Mono/Gecko prompt が出ることがあります。prefix を更新する場合は `setup-winetricks.sh` を通すと、`xvfb-run` と `WINEDLLOVERRIDES=mscoree,mshtml=` で非対話に寄せます。GUI 承認が必要になる状態は想定外です。
 
 GINKA は Wine 10 だと動画が動かないことがあるため、GINKA 用には Wine 9.0 を使うのが現在の確認済みルートです。
 

@@ -55,6 +55,14 @@ build_wine_command() {
   esac
 }
 
+run_wine() {
+  xvfb-run -a "${WINE_CMD[@]}" "$@"
+}
+
+run_winetricks() {
+  xvfb-run -a box64 winetricks -q "$@"
+}
+
 build_wine_command
 mkdir -p "$HOME/.cache/winetricks" /apps/documents
 
@@ -62,16 +70,16 @@ mkdir -p "$HOME/.cache/winetricks" /apps/documents
 # the game can launch. Run the prefix update under Xvfb and disable those
 # installers so setup remains noninteractive. Install real components later only
 # for games that need them.
-WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-mscoree,mshtml=}" xvfb-run -a "${WINE_CMD[@]}" wineboot -u
+WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-mscoree,mshtml=}" run_wine wineboot -u
 "$WINESERVER" -w || true
 
 # Debian's winetricks package asks for confirmation before self-update. Keep the
 # installer noninteractive by default; opt in only when explicitly requested.
 if [ "${WINE_DROID_WINETRICKS_SELF_UPDATE:-0}" = "1" ]; then
-  box64 winetricks --self-update || true
+  xvfb-run -a box64 winetricks --self-update || true
 fi
 
-box64 winetricks -q cjkfonts fakejapanese_ipamona d3dx9 d3dx10 d3dx11_43
+run_winetricks cjkfonts fakejapanese_ipamona d3dx9 d3dx10 d3dx11_43
 
 # Keep the default prefix 64-bit/WOW64. BURIKO-derived games are more likely to
 # hit 32-bit address-space limits, while GINKA works in a 64-bit prefix. wmp9 is
@@ -80,16 +88,16 @@ box64 winetricks -q cjkfonts fakejapanese_ipamona d3dx9 d3dx10 d3dx11_43
 #
 # Do not install quartz here. It can route video playback through native
 # DirectShow, but GINKA renders those videos upside down with native quartz.
-xvfb-run -a box64 winetricks -q wmp9
+run_winetricks wmp9
 prefix="${WINEPREFIX:-$HOME/.wine}"
 if ! grep -qx 'wmp9' "$prefix/winetricks.log" 2>/dev/null; then
   echo "wmp9 did not finish; refusing to hide a partial video-runtime setup." >&2
   exit 1
 fi
-box64 winetricks settings sound=pulse
+run_winetricks settings sound=pulse
 
-"${WINE_CMD[@]}" reg add "HKCU\\Software\\Wine\\X11 Driver" /v UseXRandR /t REG_SZ /d N /f
-"${WINE_CMD[@]}" reg add "HKCU\\Software\\Wine\\X11 Driver" /v UseXVidMode /t REG_SZ /d N /f
+run_wine reg add "HKCU\\Software\\Wine\\X11 Driver" /v UseXRandR /t REG_SZ /d N /f
+run_wine reg add "HKCU\\Software\\Wine\\X11 Driver" /v UseXVidMode /t REG_SZ /d N /f
 
 documents="$prefix/drive_c/users/$(whoami)/Documents"
 if [ -e "$documents" ] && [ ! -L "$documents" ]; then
