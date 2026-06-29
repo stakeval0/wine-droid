@@ -24,8 +24,10 @@ ensure_main_repo
 pkg update
 pkg install -y x11-repo
 pkg install -y \
+  libandroid-shmem \
   mesa \
   mesa-vulkan-icd-swrast \
+  proot \
   pulseaudio \
   proot-distro \
   termux-am \
